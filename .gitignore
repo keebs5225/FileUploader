@@ -17,6 +17,7 @@ prisma/dev.db
 prisma/dev.db-journal
 prisma/migrations/
 
+
 # VS Code settings (optional)
 .vscode/
 
