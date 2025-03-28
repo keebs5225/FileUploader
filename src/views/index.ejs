@@ -1,0 +1,30 @@
+<!-- index.ejs -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Uploader</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to the File Uploader</h1>
+        <% if (user) { %> 
+            <p>Welcome, <%= user.username %></p>
+            <!-- Ensure the form has the correct ID -->
+            <form id="uploadForm" action="/files/upload" method="POST" enctype="multipart/form-data">
+                <input type="file" id="fileInput" name="file" required />
+                <button type="submit">Upload File</button>
+            </form>
+        <% } else { %>
+            <a href="/auth/login">Login</a>
+            <a href="/auth/register">Register</a>
+        <% } %>
+    </div>
+
+    <!-- Ensure the script is loaded correctly -->
+    <script src="/js/frontend.js"></script>
+</body>
+</html>
