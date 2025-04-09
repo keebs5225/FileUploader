@@ -3,17 +3,17 @@
 /* General Styles */
 body {
     font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
+    background-color: #bfbcbc;
     margin: 0;
     padding: 0;
     transition: background-color 0.3s, color 0.3s;
 }
 
 .container {
-    width: 600px;
+    width: 90%;
     margin: 50px auto;
     padding: 20px;
-    background-color: white;
+    background-color: rgb(242, 240, 240);
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
     transition: background-color 0.3s, color 0.3s;
@@ -45,9 +45,12 @@ h1, h2 {
 /* File Grid */
 .file-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    padding: 10px;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 16px;
+    padding: 20px;
+    margin: 0 auto;
+    max-width: 1200px;
+    overflow-y: auto;
 }
 
 .file-item {
@@ -57,11 +60,18 @@ h1, h2 {
     text-align: center;
     border-radius: 4px;
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s, transform 0.3s;
 }
 
 .file-item:hover {
     background-color: #45a049;
+}
+
+.file-item.active {
+    transform: scale(1.05);
+    z-index: 1;
+    position: relative;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
 
 /* File Sorting */
@@ -86,16 +96,21 @@ h1, h2 {
 
 /* File Details */
 .file-details {
-    margin-top: 20px;
-    padding: 15px;
+    width: auto;
     background-color: #f9f9f9;
-    border: 1px solid #ddd;
+    color: #333;
     border-radius: 4px;
-    transition: background-color 0.3s, color 0.3s;
+    border: 1px solid #ddd;
+    margin-top: 10px;
+    padding: 10px;
+    font-size: 0.85rem;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    transition: opacity 0.3s;
 }
 
 .dark-mode .file-details {
     background-color: #444;
+    color: white;
     border: 1px solid #666;
 }
 
@@ -139,4 +154,108 @@ h1, h2 {
 
 .dark-mode-toggle:hover {
     background-color: #222;
+}
+
+#uploadButton {
+    width: 20%;
+}
+
+#sorting-menu {
+    padding: 10px;
+    float: right;
+}
+/* Login and Signup Form Styles */
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.auth-form input {
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+    width: 90%;
+    margin-bottom: 10px;
+}
+
+.auth-form input:focus {
+    outline: none;
+    border-color: #4CAF50;
+}
+
+.auth-form button {
+    padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.auth-form button:hover {
+    background-color: #45a049;
+}
+
+/* Success/Errors Message Styles */
+.message {
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.message.error {
+    background-color: #ffdddd;
+    color: red;
+    border: 1px solid red;
+}
+
+.message.success {
+    background-color: #ddffdd;
+    color: green;
+    border: 1px solid green;
+}
+
+/* Link Styles */
+.auth-link {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.auth-link a {
+    color: #4CAF50;
+    text-decoration: none;
+}
+
+.auth-link a:hover {
+    text-decoration: underline;
+}
+
+/* Dark Mode Styles for Forms */
+.dark-mode .auth-form input {
+    background-color: #444;
+    color: white;
+    border: 1px solid #666;
+}
+
+.dark-mode .auth-form button {
+    background-color: #4a90e2;
+}
+
+.dark-mode .auth-form button:hover {
+    background-color: #357ae8;
+}
+
+.dark-mode .message.error {
+    background-color: #8a3d3d;
+    color: white;
+}
+
+.dark-mode .message.success {
+    background-color: #4caf50;
+    color: white;
 }

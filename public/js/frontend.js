@@ -4,12 +4,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const form = document.getElementById('uploadForm');
     const fileInput = document.getElementById('fileInput');
     const fileGrid = document.getElementById('fileGrid');
-    const fileDetails = document.getElementById('fileDetails');
-    const fileName = document.getElementById('fileName');
-    const fileSize = document.getElementById('fileSize');
-    const fileType = document.getElementById('fileType');
-    const fileUploadedAt = document.getElementById('fileUploadedAt');
-    const fileDownload = document.getElementById('fileDownload');
     const darkModeToggle = document.getElementById('darkModeToggle');
     const sortSelect = document.getElementById('sort');
 
@@ -45,7 +39,6 @@ document.addEventListener('DOMContentLoaded', function () {
             const fileItem = document.createElement('div');
             fileItem.classList.add('file-item');
 
-            // Ensure file type is defined before checking
             const fileTypeIsImage = file.type && file.type.startsWith('image/');
             if (fileTypeIsImage) {
                 fileItem.innerHTML = `<img src="${file.url}" alt="${file.name}" class="file-thumbnail">`;
@@ -53,29 +46,51 @@ document.addEventListener('DOMContentLoaded', function () {
                 fileItem.innerHTML = `<span class="file-icon">📄</span><p>${file.name}</p>`;
             }
 
-            // Add delete button dynamically
             const deleteButton = document.createElement('button');
             deleteButton.textContent = 'Delete';
             deleteButton.classList.add('delete-button');
-            deleteButton.addEventListener('click', function () {
+            deleteButton.addEventListener('click', function (e) {
+                e.stopPropagation(); // Prevent triggering detail toggle
                 deleteFile(file.id);
             });
 
             fileItem.appendChild(deleteButton);
-            fileItem.addEventListener('click', () => showFileDetails(file));
+            fileItem.addEventListener('click', () => showFileDetails(file, fileItem));
             fileGrid.appendChild(fileItem);
         });
     }
 
-    // Show file details
-    function showFileDetails(file) {
-        fileName.textContent = file.name;
-        fileSize.textContent = (file.size / 1024).toFixed(2) + ' KB';
-        fileType.textContent = file.type || 'Unknown';
-        fileUploadedAt.textContent = new Date(file.createdAt).toLocaleString();
-        fileDownload.href = file.url;
-        fileDownload.textContent = 'Download File';
-        fileDetails.classList.remove('hidden');
+    // Show/hide file details inside the file square
+    function showFileDetails(file, fileElement) {
+        const previouslyActive = document.querySelector('.file-item.active');
+        if (previouslyActive && previouslyActive !== fileElement) {
+            previouslyActive.classList.remove('active');
+            const oldDetails = previouslyActive.querySelector('.file-details');
+            if (oldDetails) oldDetails.remove();
+        }
+
+        const isActive = fileElement.classList.contains('active');
+        if (isActive) {
+            fileElement.classList.remove('active');
+            const details = fileElement.querySelector('.file-details');
+            if (details) details.remove();
+            return;
+        }
+
+        fileElement.classList.add('active');
+
+        const details = document.createElement('div');
+        details.className = 'file-details';
+        details.innerHTML = `
+            <p><strong>Name:</strong> ${file.name}</p>
+            <p><strong>Size:</strong> ${(file.size / 1024).toFixed(2)} KB</p>
+
+            <p><strong>Uploaded:</strong> ${new Date(file.createdAt).toLocaleString()}</p>
+            <a href="${file.url}" target="_blank">Download File</a>
+        `;
+        // <p><strong>Type:</strong> ${file.type || 'Unknown'}</p>
+
+        fileElement.appendChild(details);
     }
 
     // Sort files
@@ -99,7 +114,6 @@ document.addEventListener('DOMContentLoaded', function () {
     form.addEventListener('submit', function (event) {
         event.preventDefault();
 
-         // Check if a file is selected
         if (!fileInput.files[0]) {
             alert('Please select a file to upload.');
             return;
@@ -115,7 +129,7 @@ document.addEventListener('DOMContentLoaded', function () {
         .then(response => response.json())
         .then(() => {
             alert('File uploaded successfully!');
-            loadFiles(); // Reload the files after upload
+            loadFiles(); // Reload files
         })
         .catch(error => console.error('Error uploading file:', error));
     });
@@ -126,7 +140,7 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(response => {
                 if (response.ok) {
                     alert('File deleted successfully!');
-                    loadFiles(); // Reload files after delete
+                    loadFiles();
                 } else {
                     console.error('Error deleting file');
                 }
