@@ -1,5 +1,6 @@
 // app.js
 
+// Importing necessary modules
 const express = require('express');
 const session = require('express-session');
 const passport = require('passport');
@@ -13,13 +14,13 @@ require('./middlewares/passportConfig');
 
 const app = express();
 
-app.use(express.static('public'));
+app.use(express.static('public')); // Serve static files
 
 // Set EJS as the view engine
 app.set('view engine', 'ejs');
 app.set('views', __dirname + '/views');
 
-// Middleware
+// Middleware configuration
 app.use(express.urlencoded({ extended: true })); // Support form submissions
 app.use(express.json());
 app.use(session({ secret: process.env.SESSION_SECRET, resave: false, saveUninitialized: false }));
@@ -35,7 +36,7 @@ app.use((req, res, next) => {
     next();
 });
 
-// Routes
+// Defining routes
 app.use('/auth', authRoutes);
 app.use('/files', fileRoutes);
 app.use('/folders', folderRoutes);

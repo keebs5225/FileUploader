@@ -1,45 +1,80 @@
 // fileController.js
 
-const prisma = require('../services/prismaService');  // Prisma client to interact with the database
-const cloudStorage = require('../services/cloudStorageService');  // Cloud storage service (Cloudinary, AWS, etc.)
+// Importing services for database and cloud storage
+const prisma = require('../services/prismaService');
+const cloudStorage = require('../services/cloudStorageService');
 
-// Controller function to upload files
+// Function to handle file upload
 exports.uploadFile = async (req, res) => {
   try {
-    // Upload file to cloud storage (e.g., Cloudinary, AWS S3)
-    const fileUrl = await cloudStorage.upload(req.file);
+    if (!req.file) {
+      return res.status(400).json({ error: 'No file uploaded' }); // Return if file is not in req.file
+    }
 
-    // Store file metadata in the database using Prisma
+    // Continue with file upload to Cloudinary
+    const fileUrl = await cloudStorage.upload(req.file);
+    console.log('File uploaded to Cloudinary, URL:', fileUrl);
+    
+    // Save file details to database
     const file = await prisma.file.create({
       data: {
-        name: req.file.originalname,  // Original file name
-        size: req.file.size,  // File size
-        url: fileUrl,  // File URL returned from cloud storage
-        userId: req.user.id,  // User ID from the authenticated session
+        name: req.file.originalname,
+        size: req.file.size,
+        url: fileUrl,
+        userId: req.user.id,
       },
     });
 
-    // Respond with the file metadata
-    res.status(201).json(file);
+    res.status(201).json(file); // Send response after file upload and save
   } catch (error) {
-    res.status(500).json({ error: error.message });  // Handle any errors
+    console.error('Error uploading file:', error);
+    res.status(500).json({ error: error.message });
   }
 };
 
-// Controller function to get file details by ID
+// Function to get details of a specific file
 exports.getFileDetails = async (req, res) => {
   try {
-    // Fetch file from the database by its ID
     const file = await prisma.file.findUnique({ where: { id: req.params.id } });
-
-    // Return error if the file is not found
     if (!file) {
       return res.status(404).json({ message: 'File not found' });
     }
-
-    // Return file metadata if found
     res.json(file);
   } catch (error) {
-    res.status(500).json({ error: error.message });  // Handle any errors
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// New function to get all files for the logged-in user
+exports.getUserFiles = async (req, res) => {
+  try {
+    const files = await prisma.file.findMany({
+      where: { userId: req.user.id },
+      orderBy: { createdAt: 'desc' }, // Sort by latest uploaded
+    });
+    res.json(files);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Delete a file
+exports.deleteFile = async (req, res) => {
+  try {
+    const file = await prisma.file.findUnique({ where: { id: req.params.id } });
+
+    if (!file) {
+      return res.status(404).json({ error: 'File not found' });
+    }
+
+    // Optional: delete from cloud storage if needed
+    // await cloudStorage.delete(file.url); // Only if you implement deletion there
+
+    await prisma.file.delete({ where: { id: req.params.id } });
+
+    res.status(200).json({ message: 'File deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting file:', error);
+    res.status(500).json({ error: error.message });
   }
 };

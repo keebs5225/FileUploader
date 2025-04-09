@@ -1,7 +1,8 @@
-//cloudStorageServerice.js
+// cloudStorageService.js
 
-const cloudinary = require('cloudinary').v2; // Cloudinary SDK
-require('dotenv').config(); // Load environment variables
+// Importing Cloudinary SDK and dotenv for environment variables
+const cloudinary = require('cloudinary').v2;
+require('dotenv').config();
 
 // Configure Cloudinary using environment variables
 cloudinary.config({
@@ -14,17 +15,45 @@ cloudinary.config({
 exports.upload = async (file) => {
   return new Promise((resolve, reject) => {
     const uploadStream = cloudinary.uploader.upload_stream(
-      { resource_type: 'auto' }, // Automatically detect file type
+      { resource_type: 'auto' },
       (error, result) => {
         if (error) {
-          reject(error); // Reject the promise on error
+          reject(error);
         } else {
-          resolve(result.secure_url); // Return the secure URL of the uploaded file
+          console.log('File uploaded to Cloudinary, URL:', result.secure_url);
+          resolve(result.secure_url);
         }
       }
     );
 
-    // Pipe the file buffer into the Cloudinary upload stream
     uploadStream.end(file.buffer);
   });
 };
+
+// Function to delete a file from Cloudinary using its public ID
+exports.delete = async (fileUrl) => {
+  try {
+    // Extract the public ID from the Cloudinary URL
+    const publicId = extractPublicId(fileUrl);
+    if (!publicId) throw new Error('Invalid Cloudinary URL');
+
+    // Delete the file from Cloudinary
+    const result = await cloudinary.uploader.destroy(publicId, {
+      resource_type: 'auto',
+    });
+
+    console.log('Cloudinary delete result:', result);
+    return result;
+  } catch (error) {
+    console.error('Error deleting file from Cloudinary:', error);
+    throw error;
+  }
+};
+
+// Helper to extract public ID from URL | Example URL: https://res.cloudinary.com/demo/image/upload/v1234567890/sample.jpg
+function extractPublicId(url) {
+  const parts = url.split('/');
+  const fileWithExtension = parts[parts.length - 1]; // e.g., sample.jpg
+  const publicIdWithFolder = parts.slice(parts.indexOf('upload') + 1).join('/').split('.')[0];
+  return publicIdWithFolder;
+}

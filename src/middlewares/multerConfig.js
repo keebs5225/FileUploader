@@ -1,5 +1,6 @@
-//multerConfig.js
+// multerConfig.js
 
+// Importing Multer for handling file uploads
 const multer = require('multer');
 
 // Set up memory storage for Multer (storing file in memory, you can change this to diskStorage if required)
