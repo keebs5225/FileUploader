@@ -1,0 +1,58 @@
+<!-- index.ejs -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Uploader</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <button id="darkModeToggle" class="dark-mode-toggle">Toggle Dark Mode</button>
+    <div class="container">
+        <h1>Welcome to the File Uploader</h1>
+        
+        <% if (user) { %> 
+            <p>Welcome to Storage <%= user.username %></p>
+            
+            <form id="uploadForm" class="auth-form">
+                <input type="file" id="fileInput" name="file" required />
+                <button id="uploadButton" type="submit">Upload</button>
+            </form>            
+            
+            <div id="sorting-menu" class="sorting-options">
+                <label for="sort">Sort By:</label>
+                <select id="sort">
+                    <option value="name">Name</option>
+                    <!-- <option value="type">Type</option> -->
+                    <option value="size">Size</option>
+                    <option value="modified">Last Modified</option>
+                </select>
+            </div>
+            
+            <!-- File Grid -->
+            <h2>Your Files</h2>
+            <div id="fileGrid" class="file-grid"></div>
+
+            <!-- File Details Section -->
+            <div id="fileDetails" class="file-details hidden">
+                <h2>File Details</h2>
+                <p><strong>Name:</strong> <span id="fileName"></span></p>
+                <p><strong>Size:</strong> <span id="fileSize"></span></p>
+                <!-- <p><strong>Type:</strong> <span id="fileType"></span></p> -->
+                <p><strong>Uploaded At:</strong> <span id="fileUploadedAt"></span></p>
+                <a id="fileDownload" href="#" target="_blank">Download</a>
+            </div>
+
+        <% } else { %>
+            <div class="auth-link">
+                <a href="/auth/login">Login</a>
+                <!-- <a href="/auth/register">Register</a> -->
+            </div>
+        <% } %>
+    </div>
+
+    <script src="/js/frontend.js"></script>
+</body>
+</html>
